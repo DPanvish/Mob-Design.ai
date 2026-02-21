@@ -74,7 +74,7 @@ const LandingSection = () => {
               </p>
             </div>
 
-            <div className="flex w-full max-w-3xl flex-col item-center gap-8 relative z-50 mt-6">
+            <div className="flex w-full max-w-3xl flex-col items-center gap-8 relative z-50 mt-6">
               <div className="w-full">
                 <PromptInput
                   className="ring-2 ring-primary"
@@ -113,7 +113,7 @@ const LandingSection = () => {
         <div className="w-full py-10">
           <div className="mx-auto max-w-3xl">
             <div>
-              <h1 className="font-medium text-xl tracking-tight">Recent Project</h1>
+              <h2 className="font-medium text-xl tracking-tight">Recent Project</h2>
             </div>
           </div>
         </div>

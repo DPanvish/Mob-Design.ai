@@ -18,7 +18,7 @@ const Header = () => {
           <Logo />
 
           <div className="flex-1 hidden justify-center items-center gap-8 md:flex">
-            <Link href="/" className="text-foreground-muted text-sm">Home</Link>
+            <Link href="/" className="text-muted-foreground text-sm">Home</Link>
           </div>
 
           <div className="flex flex-1 items-center justify-end gap-3">
@@ -27,6 +27,7 @@ const Header = () => {
               size="icon"
               className="relative rounded-full h-8 w-8"
               onClick={() => setTheme(isDark ? "light" : "dark")}
+              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             >
               <SunIcon className={cn("absolute h-5 w-5 transition", isDark ? "scale-100" : "scale-0")} />
               <MoonIcon className={cn("absolute h-5 w-5 transition", isDark ? "scale-0" : "scale-100")} />
