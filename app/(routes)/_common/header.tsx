@@ -13,6 +13,7 @@ import Link from "next/link";
 const Header = () => {
   const {theme, setTheme} = useTheme();
   const {user} = useUser();
+  const initials = `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}`
   const isDark = theme === "dark";
 
   return (
@@ -31,7 +32,6 @@ const Header = () => {
               size="icon"
               className="relative rounded-full h-8 w-8"
               onClick={() => setTheme(isDark ? "light" : "dark")}
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
             >
               <SunIcon className={cn("absolute h-5 w-5 transition", isDark ? "scale-100" : "scale-0")} />
               <MoonIcon className={cn("absolute h-5 w-5 transition", isDark ? "scale-0" : "scale-100")} />
@@ -41,22 +41,24 @@ const Header = () => {
                 <Avatar className="h-8 w-8 shrink-0 rounded-full">
                   <AvatarImage
                     src={user?.imageUrl || ""}
-                    alt={user?.firstName?.[0]! + user?.lastName?.[0] || ""} 
+                    alt={initials}
                   />
                   <AvatarFallback className="rounded-lg">
-                    {user?.firstName?.[0]! + user?.lastName?.[0] || ""}
+                    {initials}
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOutIcon className="size-4"/>
-                  <SignOutButton>
-                    Logout
-                  </SignOutButton>
-                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                 <SignOutButton>
+                   <button className="flex w-full items-center gap-2">
+                     <LogOutIcon className="size-4" />
+                     Logout
+                   </button>
+                 </SignOutButton>
+               </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
