@@ -3,6 +3,7 @@ import { Jost } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/themeProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { ClerkProvider } from '@clerk/nextjs'
 
 
 const jostSans = Jost({
@@ -20,21 +21,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${jostSans.className} antialiased`}
-      >
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${jostSans.className} antialiased`}
+        >
+          <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
 
-            <Toaster richColors position="bottom-center" />
-          </ThemeProvider>
-      </body>
-    </html>
+              <Toaster richColors position="bottom-center" />
+            </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
