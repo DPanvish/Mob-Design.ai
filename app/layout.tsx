@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/themeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { ClerkProvider } from '@clerk/nextjs'
+import { QueryProvider } from "./context/query-provider";
 
 
 const jostSans = Jost({
@@ -26,7 +27,8 @@ export default function RootLayout({
         <body
           className={`${jostSans.className} antialiased`}
         >
-          <ThemeProvider
+          <QueryProvider>
+            <ThemeProvider
               attribute="class"
               defaultTheme="system"
               enableSystem
@@ -36,6 +38,7 @@ export default function RootLayout({
 
               <Toaster richColors position="bottom-center" />
             </ThemeProvider>
+          </QueryProvider>
         </body>
       </html>
     </ClerkProvider>
