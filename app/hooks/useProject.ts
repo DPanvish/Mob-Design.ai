@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import { useMutation, useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { useRouter } from "next/navigation"
@@ -9,7 +8,7 @@ export const useProject = (userId?: string) => {
   const router = useRouter();
 
   const getProjects = useQuery({
-    queryKey: ["projects"],
+    queryKey: ["projects", userId],
     queryFn: async() => {
       const res = await axios.get("/api/project");
       return res.data.data;

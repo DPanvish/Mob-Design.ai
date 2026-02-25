@@ -1,3 +1,4 @@
+"use-client"
 
 import { memo } from 'react'
 import { ProjectTypes } from '@/types'
@@ -17,15 +18,17 @@ const ProjectCard = memo(({project}: {project: ProjectTypes}) => {
   }
 
   return (
-    <div
-      role="button"
+    <button
+      type="button"
       className="w-full flex flex-col border rounded-xl cursor-pointer hover:shadow-md overflow-hidden"
       onClick={onRoute}
+      aria-label={`Open project ${project.name}`}
     >
       <div className="h-40 bg-[#919191] relative overflow-hidden flex items-center justify-center">
         {thumbnail ? (
           <img
             src={thumbnail}
+            alt={`${project.name} thumbnail`}
             className="w-full h-full object-cover object-left scale-110"
           />
         ) : (
@@ -39,7 +42,7 @@ const ProjectCard = memo(({project}: {project: ProjectTypes}) => {
         <h3 className="font-semibold text-sm truncate w-full mb-1 line-clamp-1">{project.name}</h3>
         <p className="text-xs text-muted-foreground">{timeAgo}</p>
       </div>
-    </div>
+    </button>
   )
 });
 

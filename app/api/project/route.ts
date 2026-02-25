@@ -37,11 +37,18 @@ export const GET = async() => {
 
 export const POST = async(request: Request) => {
   try{
-    const {prompt} = await request.json();
     const { userId } = await auth();
 
     if(!userId){
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    let prompt = "";
+    try {
+      const body = (await request.json()) as { prompt?: unknown };
+      prompt = typeof body.prompt === "string" ? body.prompt.trim() : "";
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
     
     if(!prompt){
