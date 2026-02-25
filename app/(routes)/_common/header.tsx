@@ -9,12 +9,18 @@ import { SignInButton, SignOutButton, SignUpButton, useUser } from "@clerk/nextj
 import { LogOutIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes"
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 const Header = () => {
   const {theme, setTheme} = useTheme();
-  const {user} = useUser();
+  const {user, isSignedIn} = useUser();
+  const [mounted, setMounted] = useState(false);
   const initials = `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}`
   const isDark = theme === "dark";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="sticky top-0 right-0 left-0 z-30">
@@ -33,34 +39,45 @@ const Header = () => {
               className="relative rounded-full h-8 w-8"
               onClick={() => setTheme(isDark ? "light" : "dark")}
             >
-              <SunIcon className={cn("absolute h-5 w-5 transition", isDark ? "scale-100" : "scale-0")} />
-              <MoonIcon className={cn("absolute h-5 w-5 transition", isDark ? "scale-0" : "scale-100")} />
+              {mounted && (
+                <>
+                  <SunIcon className={cn("absolute h-5 w-5 transition", isDark ? "scale-100" : "scale-0")} />
+                  <MoonIcon className={cn("absolute h-5 w-5 transition", isDark ? "scale-0" : "scale-100")} />
+                </>
+              )}
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar className="h-8 w-8 shrink-0 rounded-full">
-                  <AvatarImage
-                    src={user?.imageUrl || ""}
-                    alt={initials}
-                  />
-                  <AvatarFallback className="rounded-lg">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                 <SignOutButton>
-                   <button className="flex w-full items-center gap-2">
-                     <LogOutIcon className="size-4" />
-                     Logout
-                   </button>
-                 </SignOutButton>
-               </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {isSignedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Avatar className="h-8 w-8 shrink-0 rounded-full">
+                    <AvatarImage
+                      src={user?.imageUrl || ""}
+                      alt={initials}
+                    />
+                    <AvatarFallback className="rounded-lg">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                  <SignOutButton>
+                    <button className="flex w-full items-center gap-2">
+                      <LogOutIcon className="size-4" />
+                      Logout
+                    </button>
+                  </SignOutButton>
+                </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <div className="flex items-center gap-2">
+                <SignInButton mode="modal"><Button variant="ghost">Sign In</Button></SignInButton>
+                <SignUpButton mode="modal"><Button>Sign Up</Button></SignUpButton>
+              </div>
+            )}
           </div>
         </div>
       </header>
