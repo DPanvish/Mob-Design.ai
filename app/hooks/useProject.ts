@@ -3,7 +3,7 @@ import axios from "axios"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner";
 
-export const useProject = (userId?: string) => {
+export const useProject = ({ userId, projectId }: { userId?: string; projectId?: string }) => {
 
   const router = useRouter();
 
@@ -14,6 +14,15 @@ export const useProject = (userId?: string) => {
       return res.data.data;
     },
     enabled: !!userId
+  });
+
+  const getProjectById = useQuery({
+    queryKey: ["project", projectId],
+    queryFn: async() => {
+      const res = await axios.get(`/api/project/${projectId}`);
+      return res.data.data;
+    },
+    enabled: !!projectId,
   });
 
   const createProjectMutation = useMutation({
@@ -32,9 +41,15 @@ export const useProject = (userId?: string) => {
 
   return {
     createProject: createProjectMutation.mutate,
+    getProjectById: getProjectById.data,
+    getProjectByIdLoading: getProjectById.isLoading,
+    getProjectByIdError: getProjectById.error,
     createProjectLoading: createProjectMutation.isPending,
     projects: getProjects.data,
     projectsLoading: getProjects.isLoading,
     projectsError: getProjects.error,
+    project: getProjectById.data,
+    projectLoading: getProjectById.isLoading,
+    projectError: getProjectById.error,
   };
 }
