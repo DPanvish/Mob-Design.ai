@@ -27,6 +27,7 @@ const Header = ({projectName}: {projectName?: string}) => {
               variant="ghost"
               className="rounded-full bg-muted!"
               onClick={() => router.push("/")}
+              aria-label="Go to home"
             >
               <ArrowLeftIcon className="size-4" />
             </Button>
@@ -40,6 +41,7 @@ const Header = ({projectName}: {projectName?: string}) => {
               size="icon"
               className="relative rounded-full h-8 w-8"
               onClick={() => setTheme(isDark ? "light" : "dark")}
+              aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
             >
               {mounted && (
                 <>
