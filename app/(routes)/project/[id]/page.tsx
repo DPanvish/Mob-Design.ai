@@ -37,9 +37,13 @@ const Page = () => {
         hasInitialData={hasInitialData}
         projectId={project?.id}
       >
-        <div className="flex w-full overflow-hidden">
-          <div className="relative">
-            <Canvas />
+        <div className="flex flex-1 overflow-hidden">
+          <div className="relative flex-1">
+            <Canvas 
+              projectId={project?.id}
+              projectName={project?.name}
+              isLoading={isLoading}
+            />
           </div>
         </div>
       </CanvasProvider>

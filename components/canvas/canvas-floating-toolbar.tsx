@@ -1,0 +1,105 @@
+"use client"
+
+import { useCanvas } from "@/app/context/canvas-context"
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "../ui/button";
+import { CameraIcon, ChevronDown, Palette, Save, Wand2 } from "lucide-react";
+import PromptInput from "../prompt-input";
+import { useState } from "react";
+import { parseThemeColors } from "@/lib/themes";
+import { cn } from "@/lib/utils";
+import ThemeSelector from "./theme-selector";
+import { Separator } from "../ui/separator";
+
+const CanvasFloatingToolbar = () => {
+  const {themes, theme: currentTheme, setTheme} = useCanvas();
+  const [promptText, setPromptText] = useState<string>("");
+
+  return (
+    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+      <div className="py-2 w-full max-w-2xl bg-background dark:bg-gray-950 rounded-full shadow-xl border">
+        <div className="flex flex-row items-center gap-2 px-3">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                size="icon-sm"
+                className="px-4 bg-linear-to-r from-purple-500 to-indigo-600 text-white rounded-2xl shadow-lg shadow-purple-200/50 cursor-pointer"
+              >
+                <Wand2 className="size-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 px-2! rounded-xl! shadow-lg border mt-1">
+              <PromptInput 
+                promptText={promptText}
+                setPromptText={setPromptText}
+                className="min-h-[150px] ring-1! ring-purple-500! rounded-xl! shadow-none border-muted"
+                hideSubmitBtn={true}
+              />
+              <Button
+                className="bg-linear-to-r from-purple-500 to-indigo-600 text-white rounded-2xl shadow-lg shadow-purple-200/50 cursor-pointer mt-1"
+              >
+                Design
+              </Button>
+            </PopoverContent>
+          </Popover>
+
+          <Popover>
+            <PopoverTrigger>
+              <div className="flex items-center gap-2 px-3 py-2">
+                <Palette className="sizze-4"/>
+                <div className="flex gap-1.5">
+                  {themes?.slice(0, 4)?.map((theme, index) => {
+                    const color = parseThemeColors(theme.style)
+                    return(
+                      <div
+                        role="button"
+                        key={index}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setTheme(theme.id)
+                        }}
+                        className={cn(`w-6.5 h-6.5 rounded-full cursor-pointer`, currentTheme?.id === theme.id && "ring-1 ring-offset-1")}
+                        style={{
+                          background: `linear-gradient(135deg, ${color.primary}, ${color.accent})`
+                        }}
+                      />
+                    )
+                  })}
+                </div>
+
+                <div className="flex items-center gap-1 text-sm">
+                  +{themes?.length - 4} more
+                  <ChevronDown className="size-4" />
+                </div>
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="px-2 rounded-xl shadow border">
+              <ThemeSelector />
+            </PopoverContent>
+          </Popover>
+
+          <Separator orientation="vertical" className="h-4!" />
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon-sm"
+              className="rounded-full cursor-pointer"
+            >
+              <CameraIcon className="size-4.5" />
+            </Button>
+            <Button
+              variant="default"
+              size="icon-sm"
+              className="rounded-full cursor-pointer"
+            >
+              <Save className="size-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default CanvasFloatingToolbar
