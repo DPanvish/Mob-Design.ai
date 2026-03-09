@@ -14,7 +14,7 @@ const ProjectCard = memo(({project}: {project: ProjectTypes}) => {
   const thumbnail = project.thumbnail || null;
 
   const onRoute = () => {
-    router.push(`/projects/${project.id}`);
+    router.push(`/project/${project.id}`);
   }
 
   return (

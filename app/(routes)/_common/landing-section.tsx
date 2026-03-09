@@ -14,7 +14,7 @@ const LandingSection = () => {
   const {user} = useUser();
   const userId = user?.id;
   const [promptText, setPromptText] = useState<string>("");
-  const {createProject, createProjectLoading, projects, projectsLoading, projectsError} = useProject(userId);
+  const {createProject, createProjectLoading, projects, projectsLoading, projectsError} = useProject({userId});
 
   const suggestions = [
     {
