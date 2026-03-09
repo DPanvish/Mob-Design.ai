@@ -8,7 +8,7 @@ import { Separator } from "../ui/separator"
 
 const CanvasControls = ({zoomIn, zoomOut, zoomPercent, toolMode, setToolMode}: PropsTypes) => {
   return (
-    <div className="-translate-x-1/2 absolute bottom-4 left-1/2 flex items-center gap-3 rounded-full border bg-black dark:bg-muted py-1/5 px-4 shadow-md text-white!">
+    <div className="-translate-x-1/2 absolute bottom-4 left-1/2 flex items-center gap-3 rounded-full border bg-black dark:bg-muted py-1.5 px-4 shadow-md text-white!">
       <div className="flex items-center gap-1">
         <Button
           size="icon-sm"
@@ -44,7 +44,7 @@ const CanvasControls = ({zoomIn, zoomOut, zoomPercent, toolMode, setToolMode}: P
           className={cn(
             "rounded-full cursor-pointer hover:bg-white/20! text-white!",
           )}
-          onClick={() => zoomOut}
+          onClick={() => zoomOut()}
         >
           <MinusIcon />
         </Button>
@@ -59,7 +59,7 @@ const CanvasControls = ({zoomIn, zoomOut, zoomPercent, toolMode, setToolMode}: P
           className={cn(
             "rounded-full cursor-pointer hover:bg-white/20! text-white!",
           )}
-          onClick={() => zoomIn}
+          onClick={() => zoomIn()}
         >
           <PlusIcon />
         </Button>
