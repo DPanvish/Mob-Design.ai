@@ -1,3 +1,5 @@
+import { ToolModeType } from "@/lib/canvas";
+
 export interface PromptTypes {
     promptText: string;
     setPromptText: (value: string) => void;
@@ -25,6 +27,14 @@ export type FrameTypes = {
     createdAt: Date;
     updatedAt?: Date;
     isLoading: boolean;
+}
+
+export type PropsTypes = {
+    zoomIn: () => void;
+    zoomOut: () => void;
+    zoomPercent: number;
+    toolMode: ToolModeType;
+    setToolMode: (toolMode: ToolModeType) => void;
 }
 
 export type LoadingStatusType = "idle" | "running" | "analyzing" | "generating" | "completed";
