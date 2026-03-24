@@ -6,6 +6,60 @@ import { cn } from '@/lib/utils';
 import CanvasFloatingToolbar from './canvas-floating-toolbar';
 import { TOOL_MODE_ENUM, ToolModeType } from '@/lib/canvas';
 import CanvasControls from './canvas-controls';
+import DeviceFrame from './device-frame';
+
+const DEMO_HTML = `
+  <style>
+    .container {
+      background-color: #e0f7fa;
+      height: 100%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .content {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #00796b;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #555;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .button {
+      background-color: #00796b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .button:hover {
+      background-color: #004d40;
+    }
+  </style>
+  <div class="container">
+    <div class="content">
+      <h1>Welcome!</h1>
+      <p>This is a demo of the DeviceFrame component. You can customize the content and style as you like.</p>
+      <button class="button">Get Started</button>
+    </div>
+  </div>
+`;
 
 const Canvas = ({projectId, projectName, isLoading}:{
   projectId: string;
@@ -73,6 +127,20 @@ const Canvas = ({projectId, projectName, isLoading}:{
                   }}
                 >
                   <div className="size-5 bg-blue-500">Box</div>
+
+                  <DeviceFrame
+                    frameId="demo"
+                    title="Demo Screen"
+                    html={DEMO_HTML}
+                    scale={currentScale}
+                    initialPosition={{
+                      x: 1000,
+                      y: 100
+                    }}
+                    toolMode={toolMode}
+                    theme_style={theme?.style}
+                  />
+
                 </TransformComponent>
               </div>
 

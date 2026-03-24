@@ -58,3 +58,15 @@ export interface CanvasContextType {
     setSelectedFrameId: (id: string | null) => void;
     loadingStatus: LoadingStatusType;
 }
+
+export type DeviceFramePropType = {
+    html: string;
+    title?: string;
+    width?: number;
+    minHeight?: number | string;
+    initialPosition?: {x: number; y: number};
+    frameId: string;
+    scale?: number;
+    toolMode: ToolModeType;
+    theme_style?: string;
+}
