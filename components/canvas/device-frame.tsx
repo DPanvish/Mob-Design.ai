@@ -1,12 +1,14 @@
 "use client"
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Rnd } from "react-rnd"
 import { useCanvas } from '@/app/context/canvas-context'
 import { getHTMLWrapper } from '@/lib/frame-wrapper';
 import { DeviceFramePropType } from '@/types'
 import { TOOL_MODE_ENUM } from '@/lib/canvas';
 import { cn } from '@/lib/utils';
+import DeviceFrameToolbar from './device-frame-toolbar';
+import { on } from 'events';
 
 const DeviceFrame = ({
     html,
@@ -17,7 +19,8 @@ const DeviceFrame = ({
     frameId,
     scale = 1,
     toolMode,
-    theme_style
+    theme_style,
+    onOpenHtmlDialog
 }: DeviceFramePropType) => {
   const {selectedFrameId, setSelectedFrameId} = useCanvas();
   const [frameSize, setFrameSize] = useState({width, height: minHeight});
@@ -25,6 +28,21 @@ const DeviceFrame = ({
   const isSelected = selectedFrameId === frameId;
   const fullHtml = getHTMLWrapper(html, title, theme_style, frameId);
 
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if(event.data.type === "FRAME_HEIGHT" && event.data.frameId === frameId){
+        setFrameSize((prev) => ({
+          ...prev,
+          height: event.data.height
+        }));
+      }
+    };
+    window.addEventListener("message", handleMessage);
+
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, [frameId])
   
   return (
     <Rnd
@@ -76,7 +94,14 @@ const DeviceFrame = ({
         )}
       >
         <div className="w-full h-full">
-          {/* <FrameToolbar /> */}
+          <DeviceFrameToolbar
+            title={title}
+            isSelected={isSelected && toolMode !== TOOL_MODE_ENUM.HAND}
+            disabled={false}
+            isDownloading={false}
+            onDownloadPng={() => {}}
+            onOpenHtmlDialog={onOpenHtmlDialog}
+          />
 
           <div className={cn(`relative w-full h-auto shadow-sm rounded-[36px] overflow-hidden`, isSelected && toolMode !== TOOL_MODE_ENUM.HAND && "rounded-none")}>
             <iframe

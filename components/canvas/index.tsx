@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { use, useState } from 'react'
 import { TransformWrapper, TransformComponent} from "react-zoom-pan-pinch"
 import { useCanvas } from '@/app/context/canvas-context';
 import CanvasLoader from '../canvas-loader'
@@ -7,6 +7,8 @@ import CanvasFloatingToolbar from './canvas-floating-toolbar';
 import { TOOL_MODE_ENUM, ToolModeType } from '@/lib/canvas';
 import CanvasControls from './canvas-controls';
 import DeviceFrame from './device-frame';
+import DeviceFrameSkeleton from './device-frame-skeleton';
+import HtmlDialog from './html-dialog';
 
 const DEMO_HTML = `
   <style>
@@ -66,16 +68,21 @@ const Canvas = ({projectId, projectName, isLoading}:{
   projectName: string | null;
   isLoading: boolean;
 }) => {
-  const {theme, frames, selectedFrame, setSelectedFrameId, loadingStatus} = useCanvas();
+  const {theme, frames, setSelectedFrameId, selectedFrame, loadingStatus} = useCanvas();
   const [toolMode, setToolMode] = useState<ToolModeType>(TOOL_MODE_ENUM.SELECT);
   const [zoomPercent, setZoomPercent] = useState<number>(53);
   const [currentScale, setCurrentScale] = useState<number>(0.53);
+  const [openHtmlDialog, setOpenHtmlDialog] = useState<boolean>(false);
 
   const currentStatus = isLoading
     ? "fetching"
   : loadingStatus !== "idle" && loadingStatus !== "completed"
   ? loadingStatus
   : null;
+
+  const onOpenHtmlDialog = () => {
+    setOpenHtmlDialog(true);
+  };
 
   return (
     <>
@@ -123,14 +130,47 @@ const Canvas = ({projectId, projectName, isLoading}:{
                   contentStyle={{
                     width: "100%",
                     height: "100%",
-                    background: "red"
                   }}
                 >
-                  <div className="size-5 bg-blue-500">Box</div>
+
+                  <div>
+                    {frames?.map((frame, index: number) => {
+                      const baseX = 100 + index * 480;
+                      const y = 100;
+
+                      if(frame.isLoading){
+                        return (
+                          <DeviceFrameSkeleton 
+                            key={index}
+                            style={{
+                              transform: `translate(${baseX}px, 100px)`
+                            }}
+                          />
+                        )
+                      }
+
+                      return (
+                        <DeviceFrame
+                          key={frame.id}
+                          frameId={frame.id}
+                          title={frame.title}
+                          html={frame.htmlContent}
+                          scale={currentScale}
+                          initialPosition={{
+                            x: baseX,
+                            y
+                          }}
+                          toolMode={toolMode}
+                          theme_style={theme?.style}
+                          onOpenHtmlDialog={onOpenHtmlDialog}
+                        />
+                      )
+                    })}
+                  </div>
 
                   <DeviceFrame
-                    frameId="demo"
-                    title="Demo Screen"
+                    frameId="DEMO"
+                    title="DEMO"
                     html={DEMO_HTML}
                     scale={currentScale}
                     initialPosition={{
@@ -139,8 +179,8 @@ const Canvas = ({projectId, projectName, isLoading}:{
                     }}
                     toolMode={toolMode}
                     theme_style={theme?.style}
+                    onOpenHtmlDialog={onOpenHtmlDialog}
                   />
-
                 </TransformComponent>
               </div>
 
@@ -155,6 +195,13 @@ const Canvas = ({projectId, projectName, isLoading}:{
           )}
         </TransformWrapper>
       </div>
+
+      <HtmlDialog
+        html={selectedFrame?.htmlContent || DEMO_HTML}
+        theme_style={theme?.style}
+        open={openHtmlDialog}
+        onOpenChange={setOpenHtmlDialog} 
+      />
     </>
   )
 }

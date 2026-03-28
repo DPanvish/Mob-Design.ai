@@ -1,4 +1,5 @@
 import { ToolModeType } from "@/lib/canvas";
+import { CSSProperties } from "react";
 
 export interface PromptTypes {
     promptText: string;
@@ -69,4 +70,27 @@ export type DeviceFramePropType = {
     scale?: number;
     toolMode: ToolModeType;
     theme_style?: string;
+    onOpenHtmlDialog: () => void;
+}
+
+export type DeviceFrameSkeletonType = {
+    style: CSSProperties;
+}
+
+export type DeviceFrameToolbarType = {
+    title: string;
+    isSelected?: boolean;
+    disabled?: boolean;
+    scale?: number;
+    isDownloading: boolean;
+    onOpenHtmlDialog: () => void;
+    onDownloadPng?: () => void;
+}
+
+export type HtmlDialogType = {
+    open: boolean;
+    title?: string;
+    theme_style?: string;
+    html: string;
+    onOpenChange: (v: boolean) => void;
 }
