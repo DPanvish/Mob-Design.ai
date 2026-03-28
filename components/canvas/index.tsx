@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { use, useState } from 'react'
 import { TransformWrapper, TransformComponent} from "react-zoom-pan-pinch"
 import { useCanvas } from '@/app/context/canvas-context';
 import CanvasLoader from '../canvas-loader'
@@ -6,22 +6,83 @@ import { cn } from '@/lib/utils';
 import CanvasFloatingToolbar from './canvas-floating-toolbar';
 import { TOOL_MODE_ENUM, ToolModeType } from '@/lib/canvas';
 import CanvasControls from './canvas-controls';
+import DeviceFrame from './device-frame';
+import DeviceFrameSkeleton from './device-frame-skeleton';
+import HtmlDialog from './html-dialog';
+
+const DEMO_HTML = `
+  <style>
+    .container {
+      background-color: #e0f7fa;
+      height: 100%;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .content {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      color: #00796b;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #555;
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .button {
+      background-color: #00796b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .button:hover {
+      background-color: #004d40;
+    }
+  </style>
+  <div class="container">
+    <div class="content">
+      <h1>Welcome!</h1>
+      <p>This is a demo of the DeviceFrame component. You can customize the content and style as you like.</p>
+      <button class="button">Get Started</button>
+    </div>
+  </div>
+`;
 
 const Canvas = ({projectId, projectName, isLoading}:{
   projectId: string;
   projectName: string | null;
   isLoading: boolean;
 }) => {
-  const {theme, frames, selectedFrame, setSelectedFrameId, loadingStatus} = useCanvas();
+  const {theme, frames, setSelectedFrameId, selectedFrame, loadingStatus} = useCanvas();
   const [toolMode, setToolMode] = useState<ToolModeType>(TOOL_MODE_ENUM.SELECT);
   const [zoomPercent, setZoomPercent] = useState<number>(53);
   const [currentScale, setCurrentScale] = useState<number>(0.53);
+  const [openHtmlDialog, setOpenHtmlDialog] = useState<boolean>(false);
 
   const currentStatus = isLoading
     ? "fetching"
   : loadingStatus !== "idle" && loadingStatus !== "completed"
   ? loadingStatus
   : null;
+
+  const onOpenHtmlDialog = () => {
+    setOpenHtmlDialog(true);
+  };
 
   return (
     <>
@@ -69,10 +130,57 @@ const Canvas = ({projectId, projectName, isLoading}:{
                   contentStyle={{
                     width: "100%",
                     height: "100%",
-                    background: "red"
                   }}
                 >
-                  <div className="size-5 bg-blue-500">Box</div>
+
+                  <div>
+                    {frames?.map((frame, index: number) => {
+                      const baseX = 100 + index * 480;
+                      const y = 100;
+
+                      if(frame.isLoading){
+                        return (
+                          <DeviceFrameSkeleton 
+                            key={index}
+                            style={{
+                              transform: `translate(${baseX}px, 100px)`
+                            }}
+                          />
+                        )
+                      }
+
+                      return (
+                        <DeviceFrame
+                          key={frame.id}
+                          frameId={frame.id}
+                          title={frame.title}
+                          html={frame.htmlContent}
+                          scale={currentScale}
+                          initialPosition={{
+                            x: baseX,
+                            y
+                          }}
+                          toolMode={toolMode}
+                          theme_style={theme?.style}
+                          onOpenHtmlDialog={onOpenHtmlDialog}
+                        />
+                      )
+                    })}
+                  </div>
+
+                  <DeviceFrame
+                    frameId="DEMO"
+                    title="DEMO"
+                    html={DEMO_HTML}
+                    scale={currentScale}
+                    initialPosition={{
+                      x: 1000,
+                      y: 100
+                    }}
+                    toolMode={toolMode}
+                    theme_style={theme?.style}
+                    onOpenHtmlDialog={onOpenHtmlDialog}
+                  />
                 </TransformComponent>
               </div>
 
@@ -87,6 +195,14 @@ const Canvas = ({projectId, projectName, isLoading}:{
           )}
         </TransformWrapper>
       </div>
+
+      <HtmlDialog
+        html={selectedFrame?.htmlContent || DEMO_HTML}
+        title={selectedFrame?.title ?? "DEMO"}
+        theme_style={theme?.style}
+        open={openHtmlDialog}
+        onOpenChange={setOpenHtmlDialog} 
+      />
     </>
   )
 }
