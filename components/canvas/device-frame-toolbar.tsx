@@ -45,6 +45,8 @@ const DeviceFrameToolbar = ({
           <Separator orientation="vertical" className="h-5! bg-border" />
           <div className="flex items-center gap-px">
             <Button
+              aria-label="View HTML"
+              title="View HTML"
               disabled={disabled}
               size="icon-sm"
               variant="ghost"
@@ -55,6 +57,8 @@ const DeviceFrameToolbar = ({
             </Button>
 
             <Button
+              aria-label="Download PNG"
+              title="Download PNG"
               disabled={disabled || isDownloading}
               size="icon-sm"
               variant="ghost"

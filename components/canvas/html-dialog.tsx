@@ -31,7 +31,7 @@ const HtmlDialog = ({
               language="html"
               showLineNumbers
             >
-              <CodeBlockCopyButton className="fixed top-16 right-12 z-50 bg-muted!" />
+              <CodeBlockCopyButton className="absolute top-16 right-12 z-50 bg-muted!" />
             </CodeBlock>
           </div>
         </div>

@@ -198,6 +198,7 @@ const Canvas = ({projectId, projectName, isLoading}:{
 
       <HtmlDialog
         html={selectedFrame?.htmlContent || DEMO_HTML}
+        title={selectedFrame?.title ?? "DEMO"}
         theme_style={theme?.style}
         open={openHtmlDialog}
         onOpenChange={setOpenHtmlDialog} 

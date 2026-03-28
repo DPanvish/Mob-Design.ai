@@ -82,8 +82,8 @@ const DeviceFrame = ({
         }}
         onResize={(e, direction, ref) => {
           setFrameSize({
-            width: parseInt(ref.style.width),
-            height: parseInt(ref.style.height)
+            width: parseInt(ref.style.width, 10) || frameSize.width,
+            height: parseInt(ref.style.height, 10) || frameSize.height,
           });
         }}
         className={cn("relative z-10", isSelected && toolMode !== TOOL_MODE_ENUM.HAND && 
