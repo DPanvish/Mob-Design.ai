@@ -6,6 +6,7 @@ import { FrameTypes } from "@/types";
 import { ANALYSIS_PROMPT, GENERATION_SYSTEM_PROMPT } from "@/lib/prompt";
 import prisma from "@/lib/prisma";
 import { BASE_VARIABLES, THEME_LIST } from "@/lib/themes";
+import { unsplashTool } from "../tool";
 
 const AnalysisSchema = z.object({
   theme: z
@@ -42,7 +43,7 @@ const AnalysisSchema = z.object({
     .max(4),
 });
 
-export const generateScreen = inngest.createFunction(
+export const generateScreens = inngest.createFunction(
   { id: "generate-screen", triggers: { event: "ui/generate.screens" } },
   async ({ event, step }) => {
     const {userId, projectId, prompt, frames, theme: existingTheme} = event.data;
@@ -103,7 +104,7 @@ export const generateScreen = inngest.createFunction(
         const result = await generateText({
           model: openrouter.chat("google/gemini-2.5-flash-lite"),
           system: GENERATION_SYSTEM_PROMPT,
-          tools: {},
+          tools: {searchUnsplash: unsplashTool},
           stopWhen: stepCountIs(5),
           prompt: `
             - Screen ${i + 1}/${analysis.screens.length}
