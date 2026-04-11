@@ -1,4 +1,4 @@
-import { success, z } from "zod";
+import { z } from "zod";
 import { inngest } from "../client"
 import { generateObject, generateText, stepCountIs } from 'ai';
 import { openrouter } from "@/lib/openrouter"
@@ -47,7 +47,7 @@ export const generateScreens = inngest.createFunction(
   { id: "generate-screen", triggers: { event: "ui/generate.screens" } },
   async ({ event, step }) => {
     const {userId, projectId, prompt, frames, theme: existingTheme} = event.data;
-    const isRegeneration = frames.length > 0;
+    const isRegeneration = Array.isArray(frames) && frames.length > 0;
 
     // Analyze or plan
     const analysis = await step.run("analyze-and-plan-screens", async () => {
@@ -100,7 +100,7 @@ export const generateScreens = inngest.createFunction(
         ${selectedTheme?.style || ""}
       `;
 
-      await step.run("analyze-and-plan-screens", async () => {
+      await step.run(`generate-screen-${i + 1}-${screenPlan.id}`, async () => {
         const result = await generateText({
           model: openrouter.chat("google/gemini-2.5-flash-lite"),
           system: GENERATION_SYSTEM_PROMPT,
@@ -142,7 +142,7 @@ export const generateScreens = inngest.createFunction(
         });
 
         let finalHtml = result.text ?? "";
-        const match = finalHtml.match(/<div[/s/S]*<\/div>/);
+        const match = finalHtml.match(/<div[\s\S]*<\/div>/);
         finalHtml = match ? match[0] : finalHtml;
         finalHtml = finalHtml.replace(/```/g, "");
 

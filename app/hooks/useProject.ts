@@ -23,6 +23,7 @@ export const useProject = ({ userId, projectId }: { userId?: string; projectId?:
       return res.data.data;
     },
     enabled: !!projectId,
+    refetchInterval: 2000,
   });
 
   const createProjectMutation = useMutation({

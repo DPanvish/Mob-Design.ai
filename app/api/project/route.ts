@@ -1,7 +1,9 @@
 import { generateProjectName } from "@/app/action/action";
+import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import { email } from "zod";
 
 export const GET = async() => {
   try{
@@ -63,6 +65,19 @@ export const POST = async(request: Request) => {
         name: projectName
       }
     });
+
+    try{
+      await inngest.send({
+        name: "ui/generate.screens",
+        data: {
+          userId,
+          projectId: project.id,
+          prompt,
+        }
+      })
+    }catch(error){
+      console.log("Error occured", error);
+    }
 
     return NextResponse.json({
       success: true,

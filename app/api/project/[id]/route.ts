@@ -2,9 +2,9 @@ import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async(req: NextRequest, {params}: {params: {id: string}}) => {
+export const GET = async(req: NextRequest, {params}: {params: Promise<{id: string}>}) => {
   try{
-    const {id} = params;
+    const {id} = await params;
     const { userId } = await auth();
     
     if(!userId){

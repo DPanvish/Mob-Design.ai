@@ -5,15 +5,19 @@ import { useParams } from "next/navigation"
 import Header from "./_common/header";
 import Canvas from "@/components/canvas";
 import { CanvasProvider } from "@/app/context/canvas-context";
+import { FrameTypes } from "@/types";
+
+const EMPTY_FRAMES: FrameTypes[] = [];
 
 const Page = () => {
   const param = useParams();
   const projectId = param.id as string;
 
   const {getProjectById: project, getProjectByIdLoading: isLoading, getProjectByIdError} = useProject({projectId});
-  const frames = project?.frames || [];
+  const frames: FrameTypes[] = project?.frames || EMPTY_FRAMES;
   const themeId = project?.theme || "";
   const hasInitialData = frames.length > 0;
+  const canvasStateKey = `${project?.id || projectId}:${themeId}:${frames.map((frame) => frame.id).join(",")}`;
 
   if (getProjectByIdError) {
     return <div>Failed to load project.</div>;
@@ -32,10 +36,10 @@ const Page = () => {
       <Header projectName={project?.name} />
 
       <CanvasProvider
+        key={canvasStateKey}
         initialFrames={frames}
         initialThemeId={themeId}
         hasInitialData={hasInitialData}
-        projectId={project?.id}
       >
         <div className="flex flex-1 overflow-hidden">
           <div className="relative flex-1">
