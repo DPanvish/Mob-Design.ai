@@ -9,18 +9,21 @@ import { SignInButton, SignOutButton, SignUpButton, useUser } from "@clerk/nextj
 import { LogOutIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes"
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+const subscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+const useIsClient = () =>
+  useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
 
 const Header = () => {
   const {theme, setTheme} = useTheme();
   const {user, isSignedIn} = useUser();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsClient();
   const initials = `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}`
   const isDark = theme === "dark";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <div className="sticky top-0 right-0 left-0 z-30">

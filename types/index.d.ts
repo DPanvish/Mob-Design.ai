@@ -25,7 +25,7 @@ export type FrameTypes = {
     title: string;
     htmlContent: string;
     projectId?: string;
-    createdAt: Date;
+    createdAt?: Date;
     updatedAt?: Date;
     isLoading: boolean;
 }
@@ -39,6 +39,13 @@ export type PropsTypes = {
 }
 
 export type LoadingStatusType = "idle" | "running" | "analyzing" | "generating" | "completed";
+
+export type ScreenPlan = {
+    id: string;
+    name: string;
+    purpose: string;
+    visualDescription: string;
+}
 
 export interface ThemeType {
     id: string;

@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { Rnd } from "react-rnd"
 import { useCanvas } from '@/app/context/canvas-context'
 import { getHTMLWrapper } from '@/lib/frame-wrapper';
@@ -8,7 +8,6 @@ import { DeviceFramePropType } from '@/types'
 import { TOOL_MODE_ENUM } from '@/lib/canvas';
 import { cn } from '@/lib/utils';
 import DeviceFrameToolbar from './device-frame-toolbar';
-import { on } from 'events';
 
 const DeviceFrame = ({
     html,
@@ -61,7 +60,7 @@ const DeviceFrame = ({
         disableDragging={toolMode === TOOL_MODE_ENUM.HAND}
         enableResizing={isSelected && toolMode !== TOOL_MODE_ENUM.HAND}
         scale={scale}
-        onClick={(e: any) => {
+        onClick={(e: MouseEvent<HTMLDivElement>) => {
           e.stopPropagation();
           
           if(toolMode === TOOL_MODE_ENUM.SELECT){

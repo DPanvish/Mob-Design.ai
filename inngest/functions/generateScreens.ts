@@ -7,6 +7,7 @@ import { ANALYSIS_PROMPT, GENERATION_SYSTEM_PROMPT } from "@/lib/prompt";
 import prisma from "@/lib/prisma";
 import { BASE_VARIABLES, THEME_LIST } from "@/lib/themes";
 import { unsplashTool } from "../tool";
+import { userRealtimeChannel } from "../realtime";
 
 const AnalysisSchema = z.object({
   theme: z
@@ -47,10 +48,31 @@ export const generateScreens = inngest.createFunction(
   { id: "generate-screen", triggers: { event: "ui/generate.screens" } },
   async ({ event, step }) => {
     const {userId, projectId, prompt, frames, theme: existingTheme} = event.data;
+
+    const channel = userRealtimeChannel(userId);
+
     const isRegeneration = Array.isArray(frames) && frames.length > 0;
+
+    await step.realtime.publish(
+      "publish-generation-start",
+      channel["generation.start"],
+      {
+        status: "running",
+        projectId: projectId,
+      }
+    )
 
     // Analyze or plan
     const analysis = await step.run("analyze-and-plan-screens", async () => {
+
+      await step.realtime.publish(
+        "publish-analysis-start",
+        channel["analysis.start"],
+        {
+          status: "analyzing",
+          projectId: projectId,
+        }
+      )
       const contextHTML = isRegeneration ? frames.slice(0, 4).map((frame: FrameTypes) => frame.htmlContent).join("/n") : "";
 
       const analysisPrompt = isRegeneration ? 
@@ -83,6 +105,18 @@ export const generateScreens = inngest.createFunction(
           },
         });
       }
+
+      await step.realtime.publish(
+        "publish-analysis-complete",
+        channel["analysis.complete"],
+        {
+          status: "generating",
+          theme: themeToUse,
+          totalScreens: object.screens.length,
+          screens: object.screens,
+          projectId: projectId,
+        }
+      )
 
       return {...object, themeToUse}
     })
@@ -155,8 +189,30 @@ export const generateScreens = inngest.createFunction(
           },
         });
 
+        await step.realtime.publish(
+          `publish-frame-created-${screenPlan.id}`,
+          channel["frame.created"],
+          {
+            frame: {
+              ...frame,
+              isLoading: false,
+            },
+            screenId: screenPlan.id,
+            projectId: projectId,
+          }
+        )
+
         return {success:true, frame: frame}
-      })
+      });
     }
+
+    await step.realtime.publish(
+      "publish-generation-complete",
+      channel["generation.complete"],
+      {
+        status: "completed",
+        projectId: projectId,
+      }
+    )
   }
 );

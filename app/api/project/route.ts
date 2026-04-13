@@ -3,7 +3,6 @@ import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { email } from "zod";
 
 export const GET = async() => {
   try{

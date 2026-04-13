@@ -16,7 +16,6 @@ const Page = () => {
   const {getProjectById: project, getProjectByIdLoading: isLoading, getProjectByIdError} = useProject({projectId});
   const frames: FrameTypes[] = project?.frames || EMPTY_FRAMES;
   const themeId = project?.theme || "";
-  const hasInitialData = frames.length > 0;
   const canvasStateKey = `${project?.id || projectId}:${themeId}:${frames.map((frame) => frame.id).join(",")}`;
 
   if (getProjectByIdError) {
@@ -39,7 +38,7 @@ const Page = () => {
         key={canvasStateKey}
         initialFrames={frames}
         initialThemeId={themeId}
-        hasInitialData={hasInitialData}
+        projectId={project?.id ?? projectId}
       >
         <div className="flex flex-1 overflow-hidden">
           <div className="relative flex-1">

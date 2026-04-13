@@ -4,17 +4,21 @@ import { cn } from '@/lib/utils';
 import { ArrowLeftIcon, MoonIcon, SunIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react'
+import { useSyncExternalStore } from 'react'
+
+const subscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
+
+const useIsClient = () =>
+  useSyncExternalStore(subscribe, getClientSnapshot, getServerSnapshot);
 
 const Header = ({projectName}: {projectName?: string}) => {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useIsClient();
   const {theme, setTheme} = useTheme();
   const isDark = theme === "dark";
 
-  useEffect(() => {
-      setMounted(true);
-  }, []);
 
   return (
     <div className="sticky top-0">
@@ -58,3 +62,4 @@ const Header = ({projectName}: {projectName?: string}) => {
 }
 
 export default Header
+

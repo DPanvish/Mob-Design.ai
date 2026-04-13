@@ -18,7 +18,7 @@ export const unsplashTool = tool({
             );
             const {results} = await res.json();
             return results?.[0]?.urls?.regular;
-        }catch(error){
+        }catch{
             return "";
         }
     }
