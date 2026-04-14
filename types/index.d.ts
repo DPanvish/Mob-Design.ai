@@ -25,8 +25,8 @@ export type FrameTypes = {
     title: string;
     htmlContent: string;
     projectId?: string;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
     isLoading: boolean;
 }
 

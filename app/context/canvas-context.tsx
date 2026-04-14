@@ -13,9 +13,16 @@ export const CanvasProvider = ({children, initialFrames, initialThemeId, project
   projectId: string | null;
 }) => {
   const [themeId, setThemeId] = useState<string>(initialThemeId || THEME_LIST[0].id);
-  const [frames, setFrames] = useState<FrameTypes[]>(initialFrames);
+  const [frames, setFrames] = useState<FrameTypes[]>(() =>
+    initialFrames.map((frame) => ({
+      ...frame,
+      isLoading: frame.isLoading ?? false,
+    }))
+  );
   const [selectedFrameId, setSelectedFrameId] = useState<string | null>(null);
-  const [loadingStatus, setLoadingStatus] = useState<LoadingStatusType>("idle")
+  const [loadingStatus, setLoadingStatus] = useState<LoadingStatusType>(
+    initialFrames.length > 0 ? "idle" : "running"
+  )
 
   const theme = THEME_LIST.find((theme) => theme.id === themeId) || THEME_LIST[0];
   const selectedFrame = selectedFrameId && frames.length !== 0
@@ -79,10 +86,15 @@ export const CanvasProvider = ({children, initialFrames, initialThemeId, project
             setFrames((prev) => {
               const newFrames = [...prev];
               const idx = newFrames.findIndex((f) => f.id === data.screenId);
+              const frame = {
+                ...data.frame,
+                isLoading: false,
+              };
+
               if(idx !== -1){
-                newFrames[idx] = data.frame;
+                newFrames[idx] = frame;
               }else{
-                newFrames.push(data.frame);
+                newFrames.push(frame);
               }
 
               return newFrames;

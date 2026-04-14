@@ -63,16 +63,16 @@ export const generateScreens = inngest.createFunction(
     )
 
     // Analyze or plan
-    const analysis = await step.run("analyze-and-plan-screens", async () => {
+    await step.realtime.publish(
+      "publish-analysis-start",
+      channel["analysis.start"],
+      {
+        status: "analyzing",
+        projectId: projectId,
+      }
+    )
 
-      await step.realtime.publish(
-        "publish-analysis-start",
-        channel["analysis.start"],
-        {
-          status: "analyzing",
-          projectId: projectId,
-        }
-      )
+    const analysis = await step.run("analyze-and-plan-screens", async () => {
       const contextHTML = isRegeneration ? frames.slice(0, 4).map((frame: FrameTypes) => frame.htmlContent).join("/n") : "";
 
       const analysisPrompt = isRegeneration ? 
@@ -106,20 +106,20 @@ export const generateScreens = inngest.createFunction(
         });
       }
 
-      await step.realtime.publish(
-        "publish-analysis-complete",
-        channel["analysis.complete"],
-        {
-          status: "generating",
-          theme: themeToUse,
-          totalScreens: object.screens.length,
-          screens: object.screens,
-          projectId: projectId,
-        }
-      )
-
       return {...object, themeToUse}
     })
+
+    await step.realtime.publish(
+      "publish-analysis-complete",
+      channel["analysis.complete"],
+      {
+        status: "generating",
+        theme: analysis.themeToUse,
+        totalScreens: analysis.screens.length,
+        screens: analysis.screens,
+        projectId: projectId,
+      }
+    )
 
     // Actual generation of each screens
     for(let i = 0; i < analysis.screens.length; i++){
@@ -134,7 +134,7 @@ export const generateScreens = inngest.createFunction(
         ${selectedTheme?.style || ""}
       `;
 
-      await step.run(`generate-screen-${i + 1}-${screenPlan.id}`, async () => {
+      const frame = await step.run(`generate-screen-${i + 1}-${screenPlan.id}`, async () => {
         const result = await generateText({
           model: openrouter.chat("google/gemini-2.5-flash-lite"),
           system: GENERATION_SYSTEM_PROMPT,
@@ -189,21 +189,21 @@ export const generateScreens = inngest.createFunction(
           },
         });
 
-        await step.realtime.publish(
-          `publish-frame-created-${screenPlan.id}`,
-          channel["frame.created"],
-          {
-            frame: {
-              ...frame,
-              isLoading: false,
-            },
-            screenId: screenPlan.id,
-            projectId: projectId,
-          }
-        )
-
-        return {success:true, frame: frame}
+        return frame
       });
+
+      await step.realtime.publish(
+        `publish-frame-created-${screenPlan.id}`,
+        channel["frame.created"],
+        {
+          frame: {
+            ...frame,
+            isLoading: false,
+          },
+          screenId: screenPlan.id,
+          projectId: projectId,
+        }
+      )
     }
 
     await step.realtime.publish(

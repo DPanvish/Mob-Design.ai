@@ -73,9 +73,12 @@ const Canvas = ({isLoading}:{
   const [zoomPercent, setZoomPercent] = useState<number>(53);
   const [currentScale, setCurrentScale] = useState<number>(0.53);
   const [openHtmlDialog, setOpenHtmlDialog] = useState<boolean>(false);
+  const hasLoadingFrames = frames.some((frame) => frame.isLoading);
 
   const currentStatus = isLoading
     ? "fetching"
+  : hasLoadingFrames
+  ? "generating"
   : loadingStatus !== "idle" && loadingStatus !== "completed"
   ? loadingStatus
   : null;
