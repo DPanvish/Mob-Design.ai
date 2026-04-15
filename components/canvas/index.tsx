@@ -1,4 +1,4 @@
-import { use, useState } from 'react'
+import { useState } from 'react'
 import { TransformWrapper, TransformComponent} from "react-zoom-pan-pinch"
 import { useCanvas } from '@/app/context/canvas-context';
 import CanvasLoader from '../canvas-loader'
@@ -63,19 +63,21 @@ const DEMO_HTML = `
   </div>
 `;
 
-const Canvas = ({projectId, projectName, isLoading}:{
+const Canvas = ({isLoading, projectId}:{
   projectId: string;
-  projectName: string | null;
   isLoading: boolean;
 }) => {
-  const {theme, frames, setSelectedFrameId, selectedFrame, loadingStatus} = useCanvas();
+  const {theme, frames, selectedFrame, loadingStatus} = useCanvas();
   const [toolMode, setToolMode] = useState<ToolModeType>(TOOL_MODE_ENUM.SELECT);
   const [zoomPercent, setZoomPercent] = useState<number>(53);
   const [currentScale, setCurrentScale] = useState<number>(0.53);
   const [openHtmlDialog, setOpenHtmlDialog] = useState<boolean>(false);
+  const hasLoadingFrames = frames.some((frame) => frame.isLoading);
 
   const currentStatus = isLoading
     ? "fetching"
+  : hasLoadingFrames
+  ? "generating"
   : loadingStatus !== "idle" && loadingStatus !== "completed"
   ? loadingStatus
   : null;
@@ -87,7 +89,7 @@ const Canvas = ({projectId, projectName, isLoading}:{
   return (
     <>
       <div className="relative w-full h-full overflow-hidden">
-        <CanvasFloatingToolbar />
+        <CanvasFloatingToolbar projectId={projectId}/>
 
         {currentStatus && <CanvasLoader status={currentStatus} />}
 

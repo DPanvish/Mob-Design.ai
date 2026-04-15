@@ -1,5 +1,5 @@
 import { ToolModeType } from "@/lib/canvas";
-import { CSSProperties } from "react";
+import { CSSProperties, Dispatch, SetStateAction } from "react";
 
 export interface PromptTypes {
     promptText: string;
@@ -25,9 +25,10 @@ export type FrameTypes = {
     title: string;
     htmlContent: string;
     projectId?: string;
-    createdAt: Date;
-    updatedAt?: Date;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
     isLoading: boolean;
+    isOptimistic?: boolean;
 }
 
 export type PropsTypes = {
@@ -40,6 +41,13 @@ export type PropsTypes = {
 
 export type LoadingStatusType = "idle" | "running" | "analyzing" | "generating" | "completed";
 
+export type ScreenPlan = {
+    id: string;
+    name: string;
+    purpose: string;
+    visualDescription: string;
+}
+
 export interface ThemeType {
     id: string;
     name: string;
@@ -51,7 +59,7 @@ export interface CanvasContextType {
     setTheme: (id: string) => void;
     themes: ThemeType[];
     frames: FrameTypes[];
-    setFrames: (frames: FrameTypes[]) => void;
+    setFrames: Dispatch<SetStateAction<FrameTypes[]>>;
     updateFrame: (id: string, data: Partial<FrameTypes>) => void;
     addFrame: (frame: FrameTypes) => void;
     selectedFrameId: string | null;

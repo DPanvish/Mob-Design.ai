@@ -1,10 +1,11 @@
-"use-client"
+"use client"
 
 import { memo } from 'react'
 import { ProjectTypes } from '@/types'
 import { useRouter } from 'next/navigation';
 import { FolderOpenDotIcon } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import Image from 'next/image';
 
 
 const ProjectCard = memo(({project}: {project: ProjectTypes}) => {
@@ -26,9 +27,12 @@ const ProjectCard = memo(({project}: {project: ProjectTypes}) => {
     >
       <div className="h-40 bg-[#919191] relative overflow-hidden flex items-center justify-center">
         {thumbnail ? (
-          <img
+          <Image
             src={thumbnail}
             alt={`${project.name} thumbnail`}
+            fill
+            sizes="(max-width: 768px) 100vw, 320px"
+            unoptimized
             className="w-full h-full object-cover object-left scale-110"
           />
         ) : (
@@ -45,5 +49,7 @@ const ProjectCard = memo(({project}: {project: ProjectTypes}) => {
     </button>
   )
 });
+
+ProjectCard.displayName = "ProjectCard";
 
 export default ProjectCard

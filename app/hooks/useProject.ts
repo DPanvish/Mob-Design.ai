@@ -23,6 +23,7 @@ export const useProject = ({ userId, projectId }: { userId?: string; projectId?:
       return res.data.data;
     },
     enabled: !!projectId,
+    refetchInterval: 2000,
   });
 
   const createProjectMutation = useMutation({
@@ -39,11 +40,27 @@ export const useProject = ({ userId, projectId }: { userId?: string; projectId?:
     },
   });
 
+  const generateDesignByIdMutation = useMutation({
+    mutationKey: ["project", projectId],
+    mutationFn: async(prompt: string) => {
+      await axios.post(`/api/project/${projectId}`, { prompt });
+    },
+    onSuccess: () => {
+      toast.success("Generation Started")
+    },
+    onError: (error) => {
+      console.log("Generation failed", error);
+      toast.error("Failed to generate screen")
+    },
+  });
+
   return {
     createProject: createProjectMutation.mutate,
     getProjectById: getProjectById.data,
     getProjectByIdLoading: getProjectById.isLoading,
     getProjectByIdError: getProjectById.error,
+    generateDesignById: generateDesignByIdMutation.mutate,
+    generateDesignByIdLoading: generateDesignByIdMutation.isPending,
     createProjectLoading: createProjectMutation.isPending,
     projects: getProjects.data,
     projectsLoading: getProjects.isLoading,
