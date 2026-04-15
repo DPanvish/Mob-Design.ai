@@ -10,10 +10,38 @@ import { parseThemeColors } from "@/lib/themes";
 import { cn } from "@/lib/utils";
 import ThemeSelector from "./theme-selector";
 import { Separator } from "../ui/separator";
+import { useProject } from "@/app/hooks/useProject";
+import { Spinner } from "../ui/spinner";
 
-const CanvasFloatingToolbar = () => {
-  const {themes, theme: currentTheme, setTheme} = useCanvas();
+const CanvasFloatingToolbar = ({projectId}: {projectId: string}) => {
+  const {themes, theme: currentTheme, setTheme, setFrames} = useCanvas();
   const [promptText, setPromptText] = useState<string>("");
+  
+  const {generateDesignById, generateDesignByIdLoading} = useProject({projectId});
+
+  const handleAIGenerate = () => {
+    const prompt = promptText.trim();
+
+    if(!prompt || generateDesignByIdLoading){
+      return;
+    }
+
+    const loadingFrameId = `optimistic-loading-${Date.now()}`;
+
+    setFrames((prev) => [...prev, {
+      id: loadingFrameId,
+      title: "Generating screen",
+      htmlContent: "",
+      isLoading: true,
+      isOptimistic: true,
+    }]);
+
+    generateDesignById(prompt, {
+      onError: () => {
+        setFrames((prev) => prev.filter((frame) => frame.id !== loadingFrameId));
+      },
+    })
+  }
 
   return (
     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
@@ -37,8 +65,10 @@ const CanvasFloatingToolbar = () => {
               />
               <Button
                 className="bg-linear-to-r from-purple-500 to-indigo-600 text-white rounded-2xl shadow-lg shadow-purple-200/50 cursor-pointer mt-1"
+                onClick={handleAIGenerate}
+                disabled={!promptText.trim() || generateDesignByIdLoading}
               >
-                Design
+                {generateDesignByIdLoading ? <Spinner /> : <>Design</>}
               </Button>
             </PopoverContent>
           </Popover>

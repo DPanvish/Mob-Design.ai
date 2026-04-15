@@ -78,13 +78,19 @@ export const CanvasProvider = ({children, initialFrames, initialThemeId, project
               htmlContent: "",
               isLoading: true,
             }));
-            setFrames((prev) => [...prev, ...skeletonFrames]);
+            setFrames((prev) => {
+              const existingFrames = prev.filter((frame) => !frame.isOptimistic);
+              const existingIds = new Set(existingFrames.map((frame) => frame.id));
+              const newSkeletonFrames = skeletonFrames.filter((frame) => !existingIds.has(frame.id));
+
+              return [...existingFrames, ...newSkeletonFrames];
+            });
           }
           break;
         case "frame.created":
           if(data.frame) {
             setFrames((prev) => {
-              const newFrames = [...prev];
+              const newFrames = prev.filter((frame) => !frame.isOptimistic);
               const idx = newFrames.findIndex((f) => f.id === data.screenId);
               const frame = {
                 ...data.frame,

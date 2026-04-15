@@ -63,9 +63,8 @@ const DEMO_HTML = `
   </div>
 `;
 
-const Canvas = ({isLoading}:{
+const Canvas = ({isLoading, projectId}:{
   projectId: string;
-  projectName: string | null;
   isLoading: boolean;
 }) => {
   const {theme, frames, selectedFrame, loadingStatus} = useCanvas();
@@ -90,7 +89,7 @@ const Canvas = ({isLoading}:{
   return (
     <>
       <div className="relative w-full h-full overflow-hidden">
-        <CanvasFloatingToolbar />
+        <CanvasFloatingToolbar projectId={projectId}/>
 
         {currentStatus && <CanvasLoader status={currentStatus} />}
 

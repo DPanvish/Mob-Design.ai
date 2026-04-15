@@ -43,8 +43,7 @@ const Page = () => {
         <div className="flex flex-1 overflow-hidden">
           <div className="relative flex-1">
             <Canvas 
-              projectId={project?.id}
-              projectName={project?.name}
+              projectId={project?.id ?? projectId}
               isLoading={isLoading}
             />
           </div>
